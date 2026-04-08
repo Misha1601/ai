@@ -12,12 +12,11 @@ from langchain.agents.structured_output import ToolStrategy
 
 
 # Define system prompt
-SYSTEM_PROMPT = """Вы — опытный синоптик, который любит каламбуры.
+SYSTEM_PROMPT = """Вы — опытный синоптик.
 У вас есть доступ к двум инструментам:
 - get_weather_for_location: используйте его, чтобы узнать погоду в конкретном месте.
 - get_user_location: используйте его, чтобы узнать местоположение пользователя.
-Если пользователь спрашивает вас о погоде, убедитесь, что вы знаете, где он находится.  Если по вопросу можно понять, что пользователь имеет в виду свое местоположение, используйте инструмент get_user_location, чтобы узнать его.
-Всегда отвечай на Русском языке!"""
+Если пользователь спрашивает вас о погоде, убедитесь, что вы знаете, где он находится.  Если по вопросу можно понять, что пользователь имеет в виду свое местоположение, используйте инструмент get_user_location, чтобы узнать его."""
 
 # Define context schema
 @dataclass
@@ -28,14 +27,14 @@ class Context:
 # Define tools
 @tool
 def get_weather_for_location(city: str) -> str:
-    """Узнайте погоду в указанном городе."""
+    """Сообщает о погоде в указанном городе."""
     return f"Сейчас в {city} солнечно!"
 
 @tool
 def get_user_location(runtime: ToolRuntime[Context]) -> str:
-    """Получение информации о пользователе по его ID."""
+    """Получение информации о местонахождении пользователе"""
     user_id = runtime.context.user_id
-    return "Флорида" if user_id == "1" else "SF"
+    return "Москва" if user_id == "1" else "Санкт-Питербург"
 
 # Configure model
 model = MODEL_Y1
@@ -67,16 +66,28 @@ agent = create_agent(
 
 config = {"configurable": {"thread_id": "1"}}
 
-response = agent.invoke(
-    {"messages": [{"role": "user", "content": "Какая сегодня погода на улице?"}]},
-    config=config,
-    context=Context(user_id="1")
-)
-print(response['structured_response'])
+# response = agent.invoke(
+#     {"messages": [{"role": "user", "content": "Какая сегодня погода на улице?"}]},
+#     config=config,
+#     context=Context(user_id="1")
+# )
+# print(response['structured_response'])
 
-response = agent.invoke(
-    {"messages": [{"role": "user", "content": "А какая будет погода завтра?"}]},
-    config=config,
-    context=Context(user_id="1")
-)
-print(response['structured_response'])
+# response = agent.invoke(
+#     {"messages": [{"role": "user", "content": "А какая будет погода завтра?"}]},
+#     config=config,
+#     context=Context(user_id="1")
+# )
+# print(response['structured_response'])
+
+while True:
+    user_input = input("Напишите свой вопрос (пустая строка для выхода):")
+    if user_input == "":
+        break
+    # Здесь можно обработать введённую строку
+    response = agent.invoke(
+        {"messages": [{"role": "user", "content": f"user_input"}]},
+        config=config,
+        context=Context(user_id="1")
+    )
+    print(response['structured_response'])

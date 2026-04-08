@@ -6,5 +6,5 @@ MODEL_Y1 = ChatOpenAI(
         api_key=YANDEX_CLOUD_API_KEY,
         base_url=BASE_URL,
         model=f"gpt://{YANDEX_CLOUD_FOLDER}/{YANDEX_CLOUD_MODEL}",
-        temperature=0
+        temperature=0.5
     )
