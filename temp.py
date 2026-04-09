@@ -9,11 +9,12 @@ def get_weather(location: str) -> str:
     """Показывает погоду в вашем городе"""
     return f"Сейчас в {location} 10 градусов тепла."
 
-
+print(model.profile)
 # Bind (potentially multiple) tools to the model
 # model_with_tools = model.bind_tools([get_weather], tool_choice="get_weather")
 # model_with_tools = model.bind_tools([get_weather], tool_choice="any")
 model_with_tools = model.bind_tools([get_weather])
+print(model.profile)
 
 # Step 1: Model generates tool calls
 messages = [{"role": "user", "content": "В Москве и Казани сегодня тепло?"}]
@@ -31,6 +32,10 @@ for tool_call in ai_msg.tool_calls:
 # Step 3: Pass results back to model for final response
 final_response = model_with_tools.invoke(messages)
 print(final_response.text)
+# print(type(model))
+# print(dir(model))
+model.invoke("Привет")
+print(model.profile)
 
 
 
