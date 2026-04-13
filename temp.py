@@ -37,5 +37,15 @@ print(final_response.text)
 model.invoke("Привет")
 print(model.profile)
 
+from langchain.messages import SystemMessage, HumanMessage, AIMessage
+messages = [
+ {"role": "system", "content": "Вы разбираетесь в поэзии"},
+ {"role": "user", "content": "Напишите хайку о весне"},
+ {"role": "assistant", "content": "Цветут сакуры..."}
+]
+response = model.invoke(messages)
+
+print(response)
+
 
 
