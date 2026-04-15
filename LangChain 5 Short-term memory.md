@@ -77,9 +77,9 @@ with PostgresSaver.from_conn_string(DB_URI) as checkpointer:
     )
 ```
 
-<Примечание>
+<Note>
  Дополнительные варианты контрольных указателей, включая SQLite, Postgres и Azure Cosmos DB, см. в [списке библиотек контрольных указателей](/oss/python/langgraph/persistence#checkpointer-libraries) в документации по персистентности.
-</Примечание>
+</Note>
 
 ## Настройка памяти агента
 
@@ -118,21 +118,18 @@ result = agent.invoke(
 При включенном [использование кратковременной памяти] (#) длительные разговоры могут превышать контекстное окно LLM. Распространенными решениями являются:
 
 <CardGroup cols={2}>
- <Заголовок карточки=Значок "Обрезать сообщения" ="ножницы" href=стрелка "#обрезать сообщения">
- Удалите первое или последние N сообщений (перед вызовом LLM)
- </Карточка>
-
- <Заголовок карточки= Значок "Удалить сообщения"="корзина" href =стрелка "#удалить-сообщения">
- Удалить сообщения из состояния LangGraph навсегда
- </Card>
-
- <Card title="Свести сообщения в сводку" icon="stack-2" href="#summarize-messages" arrow>
- Сведите в сводку предыдущие сообщения в истории и замените их кратким изложением
- </Card>
-
- <Card title="Пользовательские стратегии" icon="adjustments">
- Пользовательские стратегии (например, фильтрация сообщений и т.д.)
- </Card>
+    <Card title="Trim messages" icon="scissors" href="#trim-messages" arrow>
+        Удалите первое или последние N сообщений (перед вызовом LLM)
+    </Card>
+    <Card title="Delete messages" icon="trash" href="#delete-messages" arrow>
+        Удалить сообщения из состояния LangGraph навсегда
+    </Card>
+    <Card title="Summarize messages" icon="stack-2" href="#summarize-messages" arrow>
+        Сведите в сводку предыдущие сообщения в истории и замените их кратким изложением
+    </Card>
+    <Card title="Custom strategies" icon="adjustments">
+        Пользовательские стратегии (например, фильтрация сообщений и т.д.)
+    </Card>
 </CardGroup>
 
 Это позволяет агенту отслеживать разговор, не выходя за рамки контекстного окна LLM.
@@ -231,12 +228,12 @@ def delete_messages(state):
     return {"messages": [RemoveMessage(id=REMOVE_ALL_MESSAGES)]}  # [!code highlight]
 ```
 
-<Предупреждение>
+<Warning>
  При удалении сообщений **убедитесь**, что итоговая история сообщений корректна. Ознакомьтесь с ограничениями используемого вами поставщика больших языковых моделей. Например:
 
  * Некоторые поставщики ожидают, что история сообщений начинается с сообщения от пользователя
  * Большинство провайдеров требуют, чтобы за сообщениями `assistant` с вызовами инструментов следовали соответствующие сообщения с результатами работы инструментов.
-</Предупреждение>
+</Warning>
 
 ```python theme={"theme":{"light":"catppuccin-latte","dark":"catppuccin-mocha"}}
 from langchain.messages import RemoveMessage
@@ -394,7 +391,7 @@ from langgraph.types import Command
 from pydantic import BaseModel
 
 
-class CustomState(AgentState): # [!выделение кода]
+class CustomState(AgentState): # [!code highlight]
     user_name: str
 
 class CustomContext(BaseModel):
@@ -407,7 +404,7 @@ def update_user_info(
     """Найдите и обновите информацию о пользователе."""
     user_id = runtime.context.user_id
     name = "Джон Смит" if user_id == "user_123" else "Неизвестный пользователь"
-    return Command(update={ # [!выделение кода]
+    return Command(update={ # [!code highlight]
         "user_name": name,
         # обновить историю сообщений
         "messages": [
@@ -438,7 +435,7 @@ def greet(
 agent = create_agent(
     model="gpt-5-nano",
     tools=[update_user_info, greet],
-    state_schema=CustomState, # [!выделение кода]
+    state_schema=CustomState, # [!code highlight]
     context_schema=CustomContext,
 )
 
