@@ -2,6 +2,7 @@ from settings import YANDEX_CLOUD_API_KEY, YANDEX_CLOUD_FOLDER, YANDEX_CLOUD_MOD
 from langchain_openai import ChatOpenAI
 
 from langchain_community.chat_models import ChatYandexGPT
+from langchain.agents import create_agent
 from langchain.messages import HumanMessage, SystemMessage
 
 
@@ -16,6 +17,10 @@ YANDEX = ChatYandexGPT(
         api_key=YANDEX_CLOUD_API_KEY,
         folder_id=YANDEX_CLOUD_FOLDER
     )
+
+agent = create_agent(
+    model=MODEL_Y1
+)
 
 
 # answer = YANDEX.invoke(
