@@ -1,51 +1,48 @@
 from models import MODEL_Y1, YANDEX
+from settings import TAVILY_API_KEY
+import langchain_core
 model = MODEL_Y1
 # model = YANDEX
 
-from langchain.tools import tool
+import os
+from typing import Literal
+from tavily import TavilyClient
+from deepagents import create_deep_agent
 
-@tool
-def get_weather(location: str) -> str:
-    """Показывает погоду в вашем городе"""
-    return f"Сейчас в {location} 10 градусов тепла."
+tavily_client = TavilyClient(api_key=TAVILY_API_KEY)
 
-print(model.profile)
-# Bind (potentially multiple) tools to the model
-# model_with_tools = model.bind_tools([get_weather], tool_choice="get_weather")
-# model_with_tools = model.bind_tools([get_weather], tool_choice="any")
-model_with_tools = model.bind_tools([get_weather])
-print(model.profile)
+def internet_search(
+    query: str,
+    max_results: int = 5,
+    topic: Literal["general", "news", "finance"] = "general",
+    include_raw_content: bool = False,
+):
+    """Run a web search"""
+    return tavily_client.search(
+        query,
+        max_results=max_results,
+        include_raw_content=include_raw_content,
+        topic=topic,
+    )
 
-# Step 1: Model generates tool calls
-messages = [{"role": "user", "content": "В Москве и Казани сегодня тепло?"}]
-ai_msg = model_with_tools.invoke(messages)
-messages.append(ai_msg)
+# System prompt to steer the agent to be an expert researcher
+research_instructions = """You are an expert researcher. Your job is to conduct thorough research and then write a polished report.
 
-# Step 2: Execute tools and collect results
-for tool_call in ai_msg.tool_calls:
-    # Execute the tool with the generated arguments
-    print(tool_call)
-    tool_result = get_weather.invoke(tool_call)
-    messages.append(tool_result)
-    print(tool_result)
+You have access to an internet search tool as your primary means of gathering information.
 
-# Step 3: Pass results back to model for final response
-final_response = model_with_tools.invoke(messages)
-print(final_response.text)
-# print(type(model))
-# print(dir(model))
-model.invoke("Привет")
-print(model.profile)
+## `internet_search`
 
-from langchain.messages import SystemMessage, HumanMessage, AIMessage
-messages = [
- {"role": "system", "content": "Вы разбираетесь в поэзии"},
- {"role": "user", "content": "Напишите хайку о весне"},
- {"role": "assistant", "content": "Цветут сакуры..."}
-]
-response = model.invoke(messages)
+Use this to run an internet search for a given query. You can specify the max number of results to return, the topic, and whether raw content should be included.
+Write the answer in Russian.
+"""
 
-print(response)
+agent = create_deep_agent(
+    model=model,
+    tools=[internet_search],
+    system_prompt=research_instructions,
+)
 
+result = agent.invoke({"messages": [{"role": "user", "content": "What is langgraph?"}]})
 
-
+# Print the agent's response
+print(result["messages"][-1].content)
