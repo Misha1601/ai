@@ -1,7 +1,8 @@
-from models import MODEL_Y1, YANDEX
+from models import MODEL_Y1, YANDEX, MODEL_Q36
 from settings import TAVILY_API_KEY
 import langchain_core
-model = MODEL_Y1
+# model = MODEL_Y1
+model = MODEL_Q36
 # model = YANDEX
 
 import os
@@ -11,38 +12,19 @@ from deepagents import create_deep_agent
 
 tavily_client = TavilyClient(api_key=TAVILY_API_KEY)
 
-def internet_search(
-    query: str,
-    max_results: int = 5,
-    topic: Literal["general", "news", "finance"] = "general",
-    include_raw_content: bool = False,
-):
-    """Run a web search"""
-    return tavily_client.search(
-        query,
-        max_results=max_results,
-        include_raw_content=include_raw_content,
-        topic=topic,
-    )
+from langchain.agents import create_agent
 
-# System prompt to steer the agent to be an expert researcher
-research_instructions = """You are an expert researcher. Your job is to conduct thorough research and then write a polished report.
+def get_weather(city: str) -> str:
+    """Get weather for a given city."""
+    return f"It's always sunny in {city}!"
 
-You have access to an internet search tool as your primary means of gathering information.
-
-## `internet_search`
-
-Use this to run an internet search for a given query. You can specify the max number of results to return, the topic, and whether raw content should be included.
-Write the answer in Russian.
-"""
-
-agent = create_deep_agent(
-    model=model,
-    tools=[internet_search],
-    system_prompt=research_instructions,
+agent = create_agent(
+    model=MODEL_Q36,
+    tools=[get_weather],
+    system_prompt="You are a helpful assistant",
 )
 
-result = agent.invoke({"messages": [{"role": "user", "content": "What is langgraph?"}]})
-
-# Print the agent's response
-print(result["messages"][-1].content)
+result = agent.invoke(
+    {"messages": [{"role": "user", "content": "What's the weather in San Francisco?"}]}
+)
+print(result["messages"][-1].content_blocks)

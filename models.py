@@ -13,10 +13,19 @@ MODEL_Y1 = ChatOpenAI(
         temperature=0.5
     )
 
+MODEL_Q36 = ChatOpenAI(
+        api_key=YANDEX_CLOUD_API_KEY,
+        base_url=BASE_URL,
+        model=f"gpt://{YANDEX_CLOUD_FOLDER}/qwen3.6-35b-a3b/latest",
+        temperature=0.5
+    )
+
 YANDEX = ChatYandexGPT(
         api_key=YANDEX_CLOUD_API_KEY,
         folder_id=YANDEX_CLOUD_FOLDER
     )
+
+
 
 agent = create_agent(
     model=MODEL_Y1
