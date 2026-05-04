@@ -1,4 +1,4 @@
-# Запускается - streamlit run UIchat.py
+# Запускается - streamlit run UI.py
 
 import streamlit as st
 from temp import agent
