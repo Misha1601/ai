@@ -1,5 +1,6 @@
 from settings import YANDEX_CLOUD_API_KEY, YANDEX_CLOUD_FOLDER, YANDEX_CLOUD_MODEL, BASE_URL
 from langchain_openai import ChatOpenAI
+from langchain.agents import create_agent
 
 from langchain_community.chat_models import ChatYandexGPT
 from langchain.agents import create_agent
@@ -17,7 +18,7 @@ MODEL_Q36 = ChatOpenAI(
         api_key=YANDEX_CLOUD_API_KEY,
         base_url=BASE_URL,
         model=f"gpt://{YANDEX_CLOUD_FOLDER}/qwen3.6-35b-a3b/latest",
-        temperature=0.5
+        temperature=0
     )
 
 YANDEX = ChatYandexGPT(
@@ -27,12 +28,12 @@ YANDEX = ChatYandexGPT(
 
 
 
-agent = create_agent(
-    model=MODEL_Y1
-)
+# agent = create_agent(
+#     model=MODEL_Y1
+# )
 
 
-# answer = YANDEX.invoke(
+# answer = MODEL_Y1.invoke(
 #     [
 #         SystemMessage(
 #             content="Вы — полезный помощник, отвечаю на вопросы по Python."
@@ -41,4 +42,21 @@ agent = create_agent(
 #     ]
 # )
 
-# answer
+# print(answer.content)
+
+agent = create_agent(
+    model=MODEL_Y1
+)
+
+# response = agent.invoke({
+#                 "messages": [{
+#                     "role": "user",
+#                     "content": f"Кто ты?"
+#                 }]
+#             })
+# print(response)
+# result = response["messages"][-1].content_blocks
+# result = response["messages"]
+# for res in result:
+#     print(res.content)
+# print(result)
